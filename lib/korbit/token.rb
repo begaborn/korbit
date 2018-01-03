@@ -37,7 +37,7 @@ module Korbit
     end
 
     def new_access_token
-      resp = @client.post '/v1/oauth2/access_token',
+      resp = @client.post 'oauth2/access_token',
         client_id:     @client_id,
         client_secret: @client_secret,
         username:      @username,
@@ -50,7 +50,7 @@ module Korbit
     end
 
     def refresh_access_token
-      resp = @client.post '/v1/oauth2/access_token',
+      resp = @client.post 'oauth2/access_token',
         client_id:     @client_id,
         client_secret: @client_secret,
         refresh_token: @refresh_token,
