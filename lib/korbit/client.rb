@@ -40,7 +40,7 @@ module Korbit
     end
 
     def ticker(currency_pair = 'btc_krw')
-      get('ticker', {currency_pair: currency_pair, time: time})
+      get('ticker', {currency_pair: currency_pair})
     end
 
     def detailed_ticker(currency_pair = 'btc_krw')
