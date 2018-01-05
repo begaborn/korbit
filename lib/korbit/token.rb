@@ -18,11 +18,15 @@ module Korbit
       Time.now > @expired_at
     end
 
+    def need_to_refresh?
+      @expired_at && (Time.now - 300) > @expired_at
+    end
+
     def refresh_token!
-      if @refresh_token.nil?
-        new_access_token
-      else
+      if need_to_refresh?
         refresh_access_token
+      elsif @refresh_token.nil? || expired?
+        new_access_token
       end
     end
 
@@ -60,7 +64,5 @@ module Korbit
       @refresh_token = resp['refresh_token']
       @expired_at  = Time.now + resp['expires_in'] - 300
     end
-
-
   end
 end

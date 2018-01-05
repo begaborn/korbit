@@ -18,11 +18,15 @@ module Korbit
       @api_version
     end
 
-    def get(path, params={})
+    def token
+      @token
+    end
+
+    def get(path, auth = true, params={})
       path = File.join("/#{api_version}", path)
       uri = URI(File.join(@endpoint, path))
 
-      params= @token.attach_token params
+      params= @token.attach_token params if auth
       uri.query = params.to_query
 
       parse Net::HTTP.get_response(uri)
@@ -40,41 +44,62 @@ module Korbit
     end
 
     def ticker(currency_pair = 'btc_krw')
-      get('ticker', {currency_pair: currency_pair})
+      get('ticker', false, {currency_pair: currency_pair})
     end
 
     def detailed_ticker(currency_pair = 'btc_krw')
-      get('ticker/detailed', {currency_pair: currency_pair})
+      get('ticker/detailed', false, {currency_pair: currency_pair})
     end
 
     def orderbook(currency_pair = 'btc_krw')
-      get('orderbook', {currency_pair: currency_pair})
+      get('orderbook', false, {currency_pair: currency_pair})
     end
 
     def transactions(currency_pair = 'btc_krw', time = 'hour')
-      get('transactions', {currency_pair: currency_pair, time: time})
+      get('transactions', false, {currency_pair: currency_pair, time: time})
     end
 
     def constants
-      get('constants')
+      get('constants', false)
     end
 
     def buy(currency_pair: 'btc_krw', type: 'limit', price: 500, coin_amount: 1, fiat_amount: 1)
-      post('user/orders/buy')
+      post 'user/orders/buy',
+        currency_pair: currency_pair,
+        type: type,
+        price: price,
+        coin_amount: coin_amount,
+        fiat_amount: fiat_amount
     end
 
     def sell(currency_pair: 'btc_krw', type: 'limit', price: 500, coin_amount: 1)
-      post('user/orders/buy')
+      post 'user/orders/buy',
+        currency_pair: currency_pair,
+        type: type,
+        price: price,
+        coin_amount: coin_amount
     end
 
-    def cancel(currency_pair: 'btc_krw', type: 'limit', price: 500, coin_amount: 1)
-      post('user/orders/cancel')
+    def cancel(currency_pair: 'btc_krw', tr_id: nil)
+      post 'user/orders/cancel',
+        currency_pair: currency_pair,
+        id: tr_id
     end
 
     def open_order(currency_pair: 'btc_krw', offset: 0, limit: 10)
-      post('user/orders/open')
+      post 'user/orders/open',
+        currency_pair: currency_pair,
+        offset: offset,
+        limit: limit
     end
 
+    def balance
+      get('user/balances')
+    end
+
+    def refresh_token
+      @token.refresh_token!
+    end
     private
 
     def parse(response)
@@ -91,6 +116,5 @@ module Korbit
         raise ArgumentError, 'Missing key and/or secret'
       end
     end
-
   end
 end
