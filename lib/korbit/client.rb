@@ -43,6 +43,10 @@ module Korbit
       end
     end
 
+    def user_volume(currency_pair = 'btc_krw')
+      get('user/volume', true, {currency_pair: currency_pair})
+    end
+
     def ticker(currency_pair = 'btc_krw')
       get('ticker', false, {currency_pair: currency_pair})
     end
